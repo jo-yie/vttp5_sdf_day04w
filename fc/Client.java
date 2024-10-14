@@ -26,49 +26,63 @@ public class Client {
             hostName = userInput[0];
             portNumber = Integer.parseInt(userInput[1]);
         }
-        
+
         // create a socket to connect to server
         Socket sock = new Socket(hostName, portNumber);
 
         // print to confirm connection to server 
         System.out.printf(">>> Client connected to server\n");
         System.out.printf(">>> Host name: %s, Port number: %d\n", hostName, portNumber);
-    
-        // get output stream 
-        OutputStream os = sock.getOutputStream(); 
-        Writer writer = new OutputStreamWriter(os);
-        BufferedWriter bw = new BufferedWriter(writer);
+        
+        while (true) {
+        
+            // get output stream 
+            OutputStream os = sock.getOutputStream(); 
+            Writer writer = new OutputStreamWriter(os);
+            BufferedWriter bw = new BufferedWriter(writer);
 
-        // get input stream 
-        InputStream is = sock.getInputStream();
-        Reader reader = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(reader);
+            // get input stream 
+            InputStream is = sock.getInputStream();
+            Reader reader = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(reader);
 
-        // SEND get-cookie request
+            // SEND get-cookie request
 
-        // get user input 
-        Console cons = System.console(); 
-        String msg = cons.readLine(">>> User input: ");
+            // get user input 
+            Console cons = System.console(); 
+            String msg = cons.readLine(">>> User input: ");
 
-        // write message to server 
-        bw.write(msg);
+            // write message to server 
+            bw.write(msg + "\n");
 
-        // force it into the network 
-        bw.flush(); 
+            // force it into the network 
+            bw.flush(); 
 
-        // RECEIVE cookie-text 
+            // CLOSE connect 
 
-        // get server output 
-        // String serverMsg = br.readLine(); 
+            if (msg.equals("close")) {
+                break;
+            }
 
-        // // remove "cookie-text"
-        // String cookieText = serverMsg.substring(12);
+            // RECEIVE cookie-text 
 
-        // print cookie from server 
-        // System.out.println(serverMsg);
+            // get server output 
+            String serverMsg = br.readLine(); 
 
-        // // close connection 
-        // // sock.close(); 
+            if (serverMsg.startsWith("cookie-text")) {
+                // remove "cookie-text"
+                String cookieText = serverMsg.substring(12);
+
+                // print cookie from server 
+                System.out.println(cookieText);
+            }
+
+
+        }
+
+        // close connection 
+        System.out.println(">>> Connection closed");
+        sock.close(); 
 
 
     }

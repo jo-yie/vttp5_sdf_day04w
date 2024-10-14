@@ -11,37 +11,26 @@ import java.util.Random;
 public class Cookie { 
     private String fileName;
     private File cookieFile;
+    private List<String> cookieList = new ArrayList<String>();
 
-    public Cookie(String fileName) {
+    public Cookie(String fileName) throws IOException {
         this.fileName = fileName;
         this.cookieFile = new File(fileName); 
-
-    }
-
-    public void openCookie() {
-
-    }
-
-    public void closeCookie(String fileName) {
-
-
-    }
-
-    public String getRandomCookie() throws IOException {
 
         // initialise buffered reader 
         FileReader fr = new FileReader(cookieFile);
         BufferedReader br = new BufferedReader(fr); 
 
-        // new list for cookie file contents 
-        List<String> cookieList = new ArrayList<String>(); 
-
         String line; 
 
+        // add cookies from file to list 
         while ((line = br.readLine()) != null) {
             cookieList.add(line);
         }
 
+    }
+
+    public String getRandomCookie() throws IOException {
         // get random int 
         Random rand = new Random(); 
 
@@ -52,22 +41,6 @@ public class Cookie {
         // return cookie
         return cookie;
 
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public File getCookieFile() {
-        return cookieFile;
-    }
-
-    public void setCookieFile(File cookieFile) {
-        this.cookieFile = cookieFile;
     }
 
 }

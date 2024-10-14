@@ -30,15 +30,15 @@ public class Server {
         // create server
         ServerSocket server = new ServerSocket(portNumber);
 
+        // print waiting for connection 
+        System.out.println(">>> Waiting for connection"); 
+
+        // initialise socket
+        // accept incoming connection
+        Socket conn = server.accept(); 
+
         // while loop 
         while (true) {
-            
-            // print waiting for connection 
-            System.out.println(">>> Waiting for connection"); 
-
-            // initialise socket
-            // accept incoming connection
-            Socket conn = server.accept(); 
 
             // get input stream 
             InputStream is = conn.getInputStream(); 
@@ -60,23 +60,23 @@ public class Server {
             if (msg.equals("get-cookie")) {
                 randomCookie = "cookie-text " + cookieFile.getRandomCookie();
                 System.out.println(randomCookie);
+
+                // send random cookie to client 
+                bw.write(randomCookie + "\n");
+                bw.flush();
+            } 
+
+            // if user input == "close"
+            // server close connection 
+            else if (msg.equals("close")) {
+                break;
             }
 
-            // send random cookie to client 
-            // bw.write(randomCookie);
-            // bw.flush();
-
-            // // test write to client 
-            // String test = "test string to client"; 
-            // bw.write(test); 
-            // bw.flush(); 
-            // System.out.println("test sent");
-
-
-            // close connection 
-            conn.close();
-
         }
+
+         // close connection 
+         System.out.println(">>> Connection closed");
+         conn.close();
 
     }
 

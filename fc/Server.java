@@ -1,9 +1,9 @@
 package fc;
 
 import java.io.*;
-import java.io.IOException;
 import java.net.*;
 import java.util.*;
+import fc.Cookie;
 
 public class Server {
     
@@ -12,10 +12,17 @@ public class Server {
         // set default port number
         int portNumber = 12345;
 
-        // check for user input port number
+        // set default cookie file 
+        String userCookie = "cookie_file.txt";
+
+        // check for user input port number + cookie file 
         if (args.length > 0) {
             portNumber = Integer.parseInt(args[0]);
+            userCookie = args[1];
         }
+
+        // create new cookie file 
+        Cookie cookieFile = new Cookie(userCookie);
 
         // print port number
         System.out.printf(">>> Listening on port number %d\n", portNumber);
@@ -25,41 +32,50 @@ public class Server {
 
         // while loop 
         while (true) {
-
-            // RETURN RANDOM COOKIE
-
-            // create new file
-            File cookieFile = new File("cookie_file.txt"); 
-
-            // initialise buffered reader
-            BufferedReader br = new BufferedReader(new FileReader(cookieFile));
             
-            // new list for cookie file contents
-            List<String> cookieList = new ArrayList<String>();
-
-            String line; 
-
-            while((line = br.readLine()) != null) { 
-                cookieList.add(line); 
-            }
-
-            br.close();
-            
-            // get random int
-            Random rand = new Random();
-            int index = rand.nextInt(cookieList.size());
-
-            String returnCookie = cookieList.get(index);
-
-            // return random cookie
-            System.out.printf(">>> Random Cookie: %s\n", returnCookie);
-
             // print waiting for connection 
             System.out.println(">>> Waiting for connection"); 
 
             // initialise socket
             // accept incoming connection
             Socket conn = server.accept(); 
+
+            // get input stream 
+            InputStream is = conn.getInputStream(); 
+            Reader reader = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(reader);
+
+            // get output stream 
+            OutputStream os = conn.getOutputStream();
+            Writer writer = new OutputStreamWriter(os);
+            BufferedWriter bw = new BufferedWriter(writer);
+
+            // getting message from client 
+            String msg = br.readLine(); 
+
+            String randomCookie = "";
+
+            // if user input == "get-cookie"
+            // return random cookie 
+            if (msg.equals("get-cookie")) {
+                randomCookie = "cookie-text " + cookieFile.getRandomCookie();
+                System.out.println(randomCookie);
+            }
+
+            // send random cookie to client 
+            // bw.write(randomCookie);
+            // bw.flush();
+
+            // // test write to client 
+            // String test = "test string to client"; 
+            // bw.write(test); 
+            // bw.flush(); 
+            // System.out.println("test sent");
+
+
+            // close connection 
+            conn.close();
+
         }
 
     }
